@@ -60,7 +60,7 @@ This is how I deployed for the assignment using a single **t2.micro / t3.micro**
 
 3. **Clone and run**
    ```bash
-   git clone https://github.com/<your-user>/VehicleLookup.git
+   git clone https://github.com/FarouqMarei/VehicleLookup.git
    cd VehicleLookup
    docker compose up -d --build
    ```
