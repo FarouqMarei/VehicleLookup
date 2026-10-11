@@ -11,7 +11,7 @@ COPY VehicleLookup.csproj .
 RUN dotnet restore
 COPY . .
 COPY --from=angular /src/wwwroot ./wwwroot
-RUN dotnet publish VehicleLookup.csproj -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish VehicleLookup.csproj -c Release -o /app/publish /p:UseAppHost=false /p:SkipSpaBuild=true
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
