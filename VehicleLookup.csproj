@@ -4,11 +4,12 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <SpaRoot>ClientApp\</SpaRoot>
+    <SpaRoot>ClientApp/</SpaRoot>
     <SkipSpaBuild Condition="'$(SkipSpaBuild)' == ''">false</SkipSpaBuild>
   </PropertyGroup>
 
-  <Target Name="BuildAngular" BeforeTargets="ComputeFilesToPublish" Condition="'$(SkipSpaBuild)' != 'true'">
+  <Target Name="BuildAngular" BeforeTargets="ComputeFilesToPublish"
+          Condition="'$(SkipSpaBuild)' != 'true' AND Exists('$(SpaRoot)package.json')">
     <Exec WorkingDirectory="$(SpaRoot)" Command="npm ci" />
     <Exec WorkingDirectory="$(SpaRoot)" Command="npm run build -- --configuration production" />
   </Target>
