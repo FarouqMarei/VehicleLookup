@@ -3,3 +3,5 @@ obj/
 .git/
 .vs/
 **/*.user
+ClientApp/node_modules/
+ClientApp/.angular/

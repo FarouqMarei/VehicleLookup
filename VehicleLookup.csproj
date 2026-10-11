@@ -4,6 +4,12 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <SpaRoot>ClientApp\</SpaRoot>
   </PropertyGroup>
+
+  <Target Name="BuildAngular" BeforeTargets="ComputeFilesToPublish">
+    <Exec WorkingDirectory="$(SpaRoot)" Command="npm ci" />
+    <Exec WorkingDirectory="$(SpaRoot)" Command="npm run build -- --configuration production" />
+  </Target>
 
 </Project>

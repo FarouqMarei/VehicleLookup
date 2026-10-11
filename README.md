@@ -1,81 +1,75 @@
 # Vehicle Lookup (NHTSA VPIC)
 
-Small ASP.NET Core app for an assignment: choose a car make, model year, and vehicle type, then list matching models using the public NHTSA vPIC API.
+ASP.NET Core Web API + **Angular** front end. Choose make, model year, and vehicle type, then list matching models from the NHTSA vPIC API.
 
-## What it uses
+## APIs used
 
 - **All makes:** `GET https://vpic.nhtsa.dot.gov/api/vehicles/getallmakes?format=json`
 - **Types for a make:** `GET .../GetVehicleTypesForMakeId/{makeId}?format=json`
 - **Models:** `GET .../GetModelsForMakeIdYear/makeId/{id}/modelyear/{year}/vehicletype/{type}?format=json`
 
-## Run locally (without Docker)
-
-### Prerequisites
+## Prerequisites
 
 - [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
+- [Node.js 20+](https://nodejs.org/) (for the Angular app in `ClientApp/`)
 
-### Steps
+## Run locally (development)
 
-1. Open a terminal in this folder (`C:\VehicleLookup` on my machine).
-2. Restore and run:
-   ```bash
-   dotnet restore
-   dotnet run
-   ```
-3. Open the URL shown in the console (usually `http://localhost:5xxx`).
-4. Select make, year, and vehicle type, then click **Search models**.
+Use two terminals from `C:\VehicleLookup`:
 
-## Run with Docker
+**1. API backend**
 
-### Prerequisites
+```bash
+dotnet run
+```
 
-- Docker Desktop (or Docker Engine + Compose)
+Runs at **http://localhost:5166** (see `Properties/launchSettings.json`).
 
-### Steps
+**2. Angular UI**
 
-1. From the project root:
-   ```bash
-   docker compose up --build
-   ```
-2. Browse to [http://localhost:8080](http://localhost:8080).
-3. Stop with `Ctrl+C`, or run `docker compose down` in another terminal.
+```bash
+cd ClientApp
+npm install
+npm start
+```
 
-## AWS (free tier) hosting notes
+Open **http://localhost:4200**. Requests to `/api/*` are proxied to the .NET app (`ClientApp/proxy.conf.json`).
 
-This is how I deployed for the assignment using a single **t2.micro / t3.micro** EC2 instance (free tier eligible in us-east-1 if your account qualifies).
+## Run locally (single port, production-style)
 
-1. **Launch EC2**
-   - Amazon Linux 2023 or Ubuntu 22.04, instance type `t2.micro`.
-   - Create/download a key pair (.pem).
-   - Security group: allow SSH (22) from your IP, HTTP (8080) from `0.0.0.0/0` (or restrict to your IP for homework).
+Build the UI into `wwwroot`, then run the API (it serves the Angular static files):
 
-2. **Install Docker on the instance** (Amazon Linux example):
-   ```bash
-   sudo yum update -y
-   sudo yum install -y docker git
-   sudo systemctl enable --now docker
-   sudo usermod -aG docker ec2-user
-   ```
-   Log out and back in so `docker` works without sudo.
+```bash
+cd ClientApp
+npm install
+npm run build
+cd ..
+dotnet run
+```
 
-3. **Clone and run**
-   ```bash
-   git clone https://github.com/FarouqMarei/VehicleLookup.git
-   cd VehicleLookup
-   docker compose up -d --build
-   ```
+Browse to **http://localhost:5166**.
 
-4. **Test:** `http://<public-ec2-ip>:8080`
+## Docker
 
-Optional: put Nginx on port 80 as a reverse proxy to 8080, or use an Application Load Balancer (not required for the assignment demo).
+```bash
+docker compose up --build
+```
+
+Then open **http://localhost:8080**. The image builds Angular and publishes the .NET app in one Dockerfile.
+
+## AWS (free tier)
+
+Same as before: EC2 `t2.micro`, install Docker, clone this repo, `docker compose up -d --build`, open port **8080** in the security group.
 
 ## Project layout
 
-- `Services/VpicService.cs` – HTTP calls to NHTSA
-- `Controllers/VehiclesController.cs` – JSON endpoints for the page
-- `Pages/Index.cshtml` – UI
-- `wwwroot/js/site.js` – front-end logic
+| Path | Role |
+|------|------|
+| `ClientApp/` | Angular UI |
+| `Controllers/VehiclesController.cs` | REST API for the UI |
+| `Services/VpicService.cs` | Calls NHTSA |
+| `wwwroot/` | Angular build output (generated; not committed) |
 
 ## License
 
-Course assignment – no special license.
+Course assignment.

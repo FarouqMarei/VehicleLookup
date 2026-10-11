@@ -2,8 +2,17 @@ using VehicleLookup.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddRazorPages();
 builder.Services.AddControllers();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AngularDev", policy =>
+    {
+        policy.WithOrigins("http://localhost:4200")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
 
 builder.Services.AddHttpClient<VpicService>(client =>
 {
@@ -13,16 +22,18 @@ builder.Services.AddHttpClient<VpicService>(client =>
 
 var app = builder.Build();
 
-if (!app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Error");
+    app.UseCors("AngularDev");
 }
 
+app.UseDefaultFiles();
 app.UseStaticFiles();
+
 app.UseRouting();
 app.UseAuthorization();
 
 app.MapControllers();
-app.MapRazorPages();
+app.MapFallbackToFile("index.html");
 
 app.Run();

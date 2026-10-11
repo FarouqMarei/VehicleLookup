@@ -1,0 +1,88 @@
+<div class="page">
+  <header class="top-bar">
+    <h1>Vehicle Lookup</h1>
+    <p>NHTSA vPIC – pick make, year, and type to list models.</p>
+  </header>
+
+  <section class="filters">
+    <div class="field">
+      <label for="makeFilter">Make</label>
+      <input
+        id="makeFilter"
+        type="text"
+        [(ngModel)]="makeFilter"
+        (ngModelChange)="onMakeFilterChange()"
+        placeholder="Filter makes..."
+        [disabled]="loadingMakes"
+      />
+      <select
+        id="makeSelect"
+        size="10"
+        [(ngModel)]="selectedMakeId"
+        (ngModelChange)="onMakeSelected()"
+        [disabled]="loadingMakes"
+      >
+        <option [ngValue]="null">-- select make --</option>
+        @for (make of filteredMakes; track make.make_ID) {
+          <option [ngValue]="make.make_ID">{{ make.make_Name }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="yearSelect">Model year</label>
+      <select id="yearSelect" [(ngModel)]="selectedYear">
+        <option [ngValue]="null">Select year</option>
+        @for (year of years; track year) {
+          <option [ngValue]="year">{{ year }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="typeSelect">Vehicle type</label>
+      <select
+        id="typeSelect"
+        [(ngModel)]="selectedVehicleType"
+        [disabled]="!selectedMakeId || loadingTypes || vehicleTypes.length === 0"
+      >
+        <option value="">
+          @if (!selectedMakeId) {
+            Choose a make first
+          } @else if (loadingTypes) {
+            Loading...
+          } @else if (vehicleTypes.length === 0) {
+            No types available
+          } @else {
+            Select type
+          }
+        </option>
+        @for (t of vehicleTypes; track t.vehicleTypeId) {
+          <option [value]="t.vehicleTypeName">{{ t.vehicleTypeName }}</option>
+        }
+      </select>
+    </div>
+  </section>
+
+  <div class="actions">
+    <button type="button" (click)="searchModels()" [disabled]="!canSearch || searching">
+      Search models
+    </button>
+    @if (statusMessage) {
+      <span class="status">{{ statusMessage }}</span>
+    }
+  </div>
+
+  <section class="results">
+    <h2>Results</h2>
+    @if (models.length === 0) {
+      <p class="empty">No models to show yet.</p>
+    } @else {
+      <ul>
+        @for (m of models; track m.model_ID) {
+          <li>{{ m.model_Name }}</li>
+        }
+      </ul>
+    }
+  </section>
+</div>
