@@ -14,7 +14,7 @@ COPY Controllers/ Controllers/
 COPY Services/ Services/
 COPY Models/ Models/
 COPY Properties/ Properties/
-COPY appsettings.json appsettings.Development.json ./
+COPY appsettings.json ./
 COPY --from=angular /src/wwwroot ./wwwroot
 RUN printf '%s\n' '<Project><Target Name="BuildAngular"><Message Text="Skipping SPA build" Importance="high" /></Target></Project>' > Directory.Build.targets
 RUN dotnet publish VehicleLookup.csproj -c Release -o /app/publish --no-restore /p:UseAppHost=false /p:SkipSpaBuild=true
